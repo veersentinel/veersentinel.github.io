@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEER SENTINEL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+
+<body class="ui-root">
+    <div class="fx-blur-shield" id="blur-shield"></div>
+
+    <header class="ui-masthead">
+        <div class="ui-brand">VEER SENTINEL</div>
+
+        <div class="ui-controls">
+            <button class="ui-menu-trigger" id="menu-open">
+                <div class="bar"></div>
+                <div class="bar"></div>
+
+            </button>
+        </div>
+    </header>
+
+    <nav class="ui-drawer" id="nav-drawer">
+        <div class="drawer-inner">
+            <button class="ui-btn-close" id="menu-close">Dismiss ×</button>
+            <button class="ui-btn-ghost" id="theme-switch">Dark Mode</button>
+
+            <div class="nav-stack">
+                <a href="#" class="nav-link" data-load="data/home/index.json">Home</a>
+                <a href="#" class="nav-link" data-load="data/home/terrorism/index.json">Terrorism</a>
+                <a href="#" class="nav-link" data-load="data/home/cyber/index.json">Digital Defense</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="ui-viewport" id="view-layer">
+        <div id="content-mount"></div>
+    </main>
+
+    <script src="src/js/app.js"></script>
+</body>
+
+</html>

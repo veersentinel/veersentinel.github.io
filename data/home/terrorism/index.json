@@ -1,0 +1,90 @@
+{
+    "nodes": [
+        {
+            "button": {
+                "text": "Back",
+                "link": "data/home/index.json"
+            }
+        },
+        {
+            "h1": {
+                "text": "Counter-Terrorism & Civic Responsibility"
+            }
+        },
+        {
+            "p": {
+                "text": "Terrorism remains a global threat that compromises the safety of every citizen. National security is not just the responsibility of the state; it is a collective effort. By remaining vigilant, you act as the first line of defense, potentially saving countless lives through proactive observation and timely reporting."
+            }
+        },
+        {
+            "h2": {
+                "text": "Strategic Categorization of Intelligence Gathering"
+            }
+        },
+        {
+            "p": {
+                "text": "Identifying individuals involved in subversive activities requires a structured approach. While it is vital to be observant, personal safety is paramount. Intelligence gathering is generally divided into two primary operational categories:"
+            }
+        },
+        {
+            "h3": {
+                "text": "1. Active Methods (High Risk)"
+            }
+        },
+        {
+            "p": {
+                "text": "Active methods involve direct engagement or visible proximity to a subject. This includes interviewing, following closely, or any action where a connection is established between you and the suspect. These methods carry a high probability of 'compromise,' where the suspect realizes they are being watched, potentially leading to a direct confrontation or the suspect fleeing."
+            }
+        },
+        {
+            "h3": {
+                "text": "2. Passive Methods (Recommended for Civilians)"
+            }
+        },
+        {
+            "p": {
+                "text": "Passive methods focus on covert observation from a distance. The goal is to monitor the subject without their knowledge. For a common citizen, this is the safest and most effective way to assist law enforcement. It relies on blending into the environment while recording data silently."
+            }
+        },
+        {
+            "h2": {
+                "text": "Mastering Passive Observation"
+            }
+        },
+        {
+            "p": {
+                "text": "To effectively identify a threat using passive techniques, you must look beyond the surface. Focus on the 'Pattern of Life' and behavioral anomalies:"
+            }
+        },
+        {
+            "li": {
+                "text": "Network Mapping: Observe who the individual interacts with and where these meetings take place. Are they frequenting unconventional locations at odd hours?"
+            }
+        },
+        {
+            "li": {
+                "text": "Behavioral Analysis: Analyze body language and ocular cues. Does the person appear hyper-vigilant, constantly scanning for cameras or security personnel while avoiding eye contact with others?"
+            }
+        },
+        {
+            "li": {
+                "text": "Temporal Patterns: Track the timing of their movements. Do they follow a rigid, repetitive schedule that suggests they are 'casing' a specific target or testing security response times?"
+            }
+        },
+        {
+            "li": {
+                "text": "Baseline Deviations: Identify small but significant anomalies in their routine that do not align with a typical resident or tourist in that specific area."
+            }
+        },
+        {
+            "h2": {
+                "text": "Safety Protocol"
+            }
+        },
+        {
+            "p": {
+                "text": "Remember: Your role is to be a witness, not a hero. If you identify a credible pattern of suspicious behavior, do not attempt to apprehend the individual. Document your findings—times, locations, and descriptions—and report them immediately to the relevant security agencies."
+            }
+        }
+    ]
+}

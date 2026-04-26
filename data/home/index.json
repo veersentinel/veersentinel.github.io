@@ -1,0 +1,43 @@
+{
+  "nodes": [
+    {
+      "img": {
+        "class": "center",
+        "src": "src/pics/icons/logo.png",
+        "style": "width: 250px; margin-bottom: 40px;"
+      }
+    },
+    {
+      "tile": {
+        "title": "National Growth & Prosperity",
+        "desc": "An in-depth analysis of the pillars of socio-economic development. Explore how industrial innovation and technological self-reliance propel a nation toward global superpower status.",
+        "link": "data/development/economics/index.json"
+      }
+    },
+    {
+      "tile": {
+        "title": "National Vigilance & Counter-Terrorism",
+        "desc": "Empowering citizens with the skills to identify suspicious activities and follow proper protocols for reporting threats. Learn the art of observation to protect your community and support law enforcement.",
+        "link" : "data/home/terrorism/index.json"
+      }
+    },
+    {
+      "tile": {
+        "title": "Cyber Sovereignty & Digital Defense",
+        "desc": "Master the tools to defend against cyber-attacks and secure critical infrastructure. Focus on building self-dependent technology to ensure digital independence from foreign threats."
+      }
+    },
+    {
+      "tile": {
+        "title": "Information Warfare & Narrative Defense",
+        "desc": "Expose foreign propaganda, fake news, and coordinated bot networks. Learn to dismantle enemy narratives on social media and uphold the truth through digital awareness and media literacy."
+      }
+    },
+    {
+      "tile": {
+        "title": "Geopolitical Strategy & Intelligence",
+        "desc": "Understand the global landscape and how to identify external threats. Analyze enemy tactics and regional dynamics to stay one step ahead in the defense of your nation."
+      }
+    }
+  ]
+}
