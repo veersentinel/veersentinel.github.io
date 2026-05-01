@@ -94,6 +94,9 @@ class NavigationEngine {
 /**
  * COMPONENT FACTORY (SAFE)
  */
+/**
+ * COMPONENT FACTORY (SAFE + SCHEMA AWARE)
+ */
 class ComponentFactory {
 
     static create(type, data, index = 0) {
@@ -108,20 +111,52 @@ class ComponentFactory {
         }
     }
 
+    /**
+     * Applies meta only if explicitly provided in JSON
+     */
+    static #applyMeta(el, data) {
+        if (!data || typeof data !== "object") return;
+
+        if (data.class) el.className = data.class;
+        if (data.id) el.id = data.id;
+        if (data.style) el.style.cssText = data.style;
+
+        if (data.attrs && typeof data.attrs === "object") {
+            Object.entries(data.attrs).forEach(([k, v]) => {
+                el.setAttribute(k, v);
+            });
+        }
+    }
+
     static #text(tag, data) {
         const el = document.createElement(tag);
-        el.textContent = typeof data === "object" ? data.text ?? "" : data;
+
+        if (typeof data === "object") {
+            el.textContent = data.text ?? "";
+            this.#applyMeta(el, data);
+        } else {
+            el.textContent = data;
+        }
+
         return el;
     }
 
     static #image(data) {
         const img = document.createElement("img");
-        img.src = typeof data === "object" ? data.src : data;
-        img.alt = data?.alt || "";
+
+        if (typeof data === "object") {
+            img.src = data.src;
+            img.alt = data.alt || "";
+            this.#applyMeta(img, data);
+        } else {
+            img.src = data;
+        }
+
         img.loading = "lazy";
         img.decoding = "async";
         img.referrerPolicy = "no-referrer";
         img.onerror = () => img.remove();
+
         return img;
     }
 
@@ -129,6 +164,8 @@ class ComponentFactory {
         const wrapper = document.createElement("div");
         wrapper.className = "grid-tile";
         wrapper.style.animationDelay = `${index * 80}ms`;
+
+        this.#applyMeta(wrapper, data);
 
         const content = document.createElement("div");
         content.className = "tile-content";
@@ -142,9 +179,12 @@ class ComponentFactory {
         content.append(title, desc);
         wrapper.appendChild(content);
 
-        wrapper.addEventListener("click", () => {
-            if (data.link) window.location.hash = data.link;
-        });
+        if (data.link) {
+            wrapper.style.cursor = "pointer";
+            wrapper.addEventListener("click", () => {
+                window.location.hash = data.link;
+            });
+        }
 
         return wrapper;
     }
@@ -153,16 +193,21 @@ class ComponentFactory {
         const btn = document.createElement("button");
         btn.className = "ui-btn-action";
         btn.type = "button";
-        btn.textContent = data.text || "";
 
-        btn.addEventListener("click", () => {
-            if (data.link) window.location.hash = data.link;
-        });
+        if (typeof data === "object") {
+            btn.textContent = data.text || "";
+            this.#applyMeta(btn, data);
+
+            if (data.link) {
+                btn.addEventListener("click", () => {
+                    window.location.hash = data.link;
+                });
+            }
+        }
 
         return btn;
     }
 }
-
 
 /**
  * APP CORE

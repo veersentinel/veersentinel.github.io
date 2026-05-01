@@ -1,34 +1,37 @@
-/* --- 1. SYSTEM CONFIGURATION & MODERN VARIABLES --- */
-@property --grad-angle {
+/* =========================================================
+   1. SYSTEM VARIABLES AND COLOR ENGINE
+========================================================= */
+
+@property --gradient-angle {
     syntax: "<angle>";
     initial-value: 0deg;
     inherits: false;
 }
 
 :root {
-    /* Color Palette - Designed for High Contrast & Visual Richness */
     --accent: oklch(65% 0.28 265);
-    /* Electric Indigo */
     --accent-light: oklch(75% 0.15 265);
     --secondary: oklch(60% 0.35 340);
-    /* Hyper Magenta */
 
-    /* Light Theme (Default) */
     --bg: oklch(100% 0 0);
     --surface: oklch(98% 0.01 265);
     --surface-glass: rgba(255, 255, 255, 0.8);
+
     --text: oklch(15% 0.05 265);
     --text-muted: oklch(50% 0.02 265);
     --border: oklch(0% 0 0 / 10%);
 
-    /* Motion & Spacing */
-    --transit: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    --transit-bounce: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+    --transit: all 0.6s var(--ease-out-expo);
+    --transit-bounce: all 0.6s var(--ease-elastic);
+
     --gap-sm: clamp(1rem, 3vw, 1.5rem);
     --gap-md: clamp(1.5rem, 5vw, 3rem);
 }
 
-/* Dark Mode Overrides */
+/* Dark mode overrides */
 body.dark-mode {
     --bg: oklch(10% 0.02 265);
     --surface: oklch(14% 0.03 265);
@@ -38,8 +41,14 @@ body.dark-mode {
     --border: oklch(100% 0 0 / 12%);
 }
 
-/* --- 2. GLOBAL RESET & BASE --- */
-* {
+
+/* =========================================================
+   2. GLOBAL RESET AND BASE LAYOUT
+========================================================= */
+
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -52,15 +61,17 @@ html {
 }
 
 body {
-    background-color: var(--bg);
-    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
-    overflow-x: hidden;
-    min-height: 100vh;
+
+    background: var(--bg);
+    color: var(--text);
 }
 
-/* Background Texture */
+/* Soft radial background texture */
 body::before {
     content: "";
     position: fixed;
@@ -71,20 +82,28 @@ body::before {
     z-index: -1;
 }
 
-/* --- 3. MOBILE-FIRST NAVIGATION (MASTHEAD) --- */
+
+/* =========================================================
+   3. MASTHEAD NAVIGATION BAR
+========================================================= */
+
 .ui-masthead {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 70px;
-    background: var(--surface-glass);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid var(--border);
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     padding: 0 var(--gap-sm);
+
+    background: var(--surface-glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+
     z-index: 1000;
 }
 
@@ -93,6 +112,7 @@ body::before {
     font-size: 1.2rem;
     letter-spacing: -0.05em;
     text-transform: uppercase;
+
     background: linear-gradient(to right, var(--accent), var(--secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -101,118 +121,243 @@ body::before {
 .ui-menu-trigger {
     all: unset;
     cursor: pointer;
+
     width: 44px;
     height: 44px;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 6px;
+
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
+
     transition: var(--transit);
 }
 
 .ui-menu-trigger .bar {
     width: 22px;
     height: 2.5px;
-    background: var(--text);
     border-radius: 10px;
-    transition: var(--transit);
+    background: var(--text);
 }
 
 .ui-menu-trigger:hover {
     border-color: var(--accent);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px var(--border);
 }
 
-/* --- 4. NAVIGATION DRAWER (MOBILE & DESKTOP) --- */
+
+/* =========================================================
+   4. DRAWER BASE STRUCTURE
+========================================================= */
+
+
+/* =========================================================
+   NAV DRAWER CORE LAYOUT
+========================================================= */
+
 .ui-drawer {
     position: fixed;
     top: 0;
-    right: -100%;
-    /* Hidden by default */
-    width: min(400px, 100%);
+    right: 0;
+
     height: 100vh;
-    background: var(--bg);
-    z-index: 2000;
-    padding: 40px var(--gap-sm);
+    width: 100%;
+
     display: flex;
     flex-direction: column;
-    box-shadow: -20px 0 60px rgba(0, 0, 0, 0.1);
-    transition: right 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+
+    background: var(--surface);
+    backdrop-filter: blur(30px) saturate(200%);
+
+    transform: translateX(100%);
+    transition: transform 0.6s var(--ease-out-expo);
+
+    z-index: 1200;
+
+    overflow: hidden;
 }
 
 .ui-drawer.active {
-    right: 0;
+    transform: translateX(0);
 }
+
+
+/* =========================================================
+   DRAWER INNER STRUCTURE
+========================================================= */
+
+.drawer-inner {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    width: 100%;
+
+    padding: 1.5rem;
+    gap: 1rem;
+}
+
+
+/* =========================================================
+   ACTION BUTTONS AREA
+========================================================= */
 
 .ui-btn-close,
 .ui-btn-ghost {
     all: unset;
     cursor: pointer;
-    padding: 14px 24px;
-    border-radius: 12px;
-    text-align: center;
-    font-weight: 700;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     font-size: 0.9rem;
+    font-weight: 700;
+
+    padding: 0.6rem 1rem;
+
+    border-radius: 10px;
     border: 1px solid var(--border);
-    margin-bottom: 12px;
+
+    background: transparent;
+    color: var(--text);
+
     transition: var(--transit);
 }
 
-.ui-btn-close {
-    background: var(--text);
-    color: var(--bg);
+.ui-btn-close:hover,
+.ui-btn-ghost:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
 }
 
-.ui-btn-ghost {
-    background: var(--surface);
-    color: var(--text);
-}
+
+/* =========================================================
+   NAVIGATION STACK (SCROLL SAFE)
+========================================================= */
 
 .nav-stack {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    margin-top: 30px;
+
+    gap: 0.6rem;
+
+    flex: 1;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-right: 0.5rem;
+    padding-bottom: 2rem;
 }
 
+
+/* =========================================================
+   NAV LINKS (STABLE + CLEAN HOVER)
+========================================================= */
+
 .nav-link {
+    display: block;
+
     text-decoration: none;
+
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+
     color: var(--text);
-    font-size: 2.5rem;
-    font-weight: 900;
-    letter-spacing: -0.05em;
-    opacity: 0.4;
-    transition: var(--transit);
+    background: rgba(255, 255, 255, 0.04);
+
+    transition: transform 0.25s ease,
+                background 0.25s ease,
+                color 0.25s ease;
+
+    will-change: transform;
 }
 
 .nav-link:hover {
-    opacity: 1;
-    transform: translateX(10px);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px);
     color: var(--accent);
 }
 
-/* --- 5. MAIN VIEWPORT & JSON NODE STYLES --- */
+
+/* =========================================================
+   SCROLL BEHAVIOR IMPROVEMENT
+========================================================= */
+
+.nav-stack::-webkit-scrollbar {
+    width: 4px;
+}
+
+.nav-stack::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+.nav-stack::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+
+/* =========================================================
+   DESKTOP REFINEMENT (SIDE PANEL FEEL)
+========================================================= */
+
+@media (min-width: 1024px) {
+
+    .ui-drawer {
+        width: 420px;
+        right: 0;
+    }
+
+    .drawer-inner {
+        padding: 2rem;
+    }
+
+    .nav-link {
+        font-size: 0.95rem;
+    }
+
+    .nav-link:hover {
+        transform: translateX(8px);
+    }
+}
+
+/* =========================================================
+   6. MAIN VIEWPORT CONTAINER
+========================================================= */
+
 .ui-viewport {
     width: 100%;
     max-width: 1200px;
-    /* Max containment for desktop */
+
     margin: 100px auto 60px;
     padding: 0 var(--gap-sm);
 }
 
-/* Responsive Content Stack */
+
+/* Container for JSON rendered nodes */
 #content-mount {
     display: flex;
     flex-direction: column;
     gap: var(--gap-sm);
 }
 
-/* JSON <h1> */
+
+/* =========================================================
+   7. TYPOGRAPHY FOR JSON NODES
+========================================================= */
+
+/* H1 large hero text */
 #content-mount h1 {
     font-size: clamp(2.5rem, 8vw, 5rem);
     line-height: 0.95;
@@ -222,27 +367,72 @@ body::before {
     text-wrap: balance;
 }
 
-/* JSON <h2> & <h3> */
+/* H2 section heading */
 #content-mount h2 {
     font-size: 1.8rem;
     margin-top: 40px;
-    border-left: 4px solid var(--accent);
-    padding-left: 15px;
 }
 
+/* H3 subsection heading */
 #content-mount h3 {
     font-size: 1.3rem;
     color: var(--accent);
     margin-top: 20px;
 }
 
-/* JSON <p> & <li> */
+/* Paragraph reading comfort */
 #content-mount p {
     font-size: 1.1rem;
     color: var(--text-muted);
     max-width: 75ch;
-    /* Comfortable reading width */
 }
+
+
+/* =========================================================
+   8. CENTERED CONTENT UTILITIES
+========================================================= */
+
+.center {
+    text-align: center;
+}
+
+.center img,
+img.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.center h1,
+.center h2,
+.center h3,
+.center p {
+    text-align: center;
+
+}
+
+.center h1::before,
+.center h2::before,
+.center h3::before,
+.center p {
+    color: red;
+
+}
+
+/* =========================================================
+   9. IMAGE BEHAVIOR
+========================================================= */
+
+#content-mount img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 16px;
+}
+
+
+/* =========================================================
+   10. LIST ITEMS AS PANELS
+========================================================= */
 
 #content-mount li {
     list-style: none;
@@ -253,33 +443,32 @@ body::before {
     margin-bottom: 10px;
 }
 
-/* JSON <img> */
-img.center {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin: 20px auto;
-    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1));
-}
 
-/* --- 6. RICH TILES & BUTTONS --- */
+/* =========================================================
+   11. ACTION BUTTONS
+========================================================= */
 
-/* Action Button (e.g., "Back") */
 .ui-btn-action,
 button[data-load] {
     all: unset;
     cursor: pointer;
+
     display: inline-flex;
     justify-content: center;
+
     padding: 12px 30px;
+    width: fit-content;
+
     background: var(--accent);
     color: white;
+
     border-radius: 100px;
+
     font-weight: 800;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    width: fit-content;
+
     transition: var(--transit-bounce);
     box-shadow: 0 10px 20px var(--border);
 }
@@ -287,10 +476,12 @@ button[data-load] {
 .ui-btn-action:hover {
     transform: scale(1.05) translateY(-3px);
     background: var(--secondary);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* The Adaptive Grid for Home Tiles */
+/* =========================================================
+   12. GRID LAYOUT FOR TILES
+========================================================= */
+
 section {
     display: grid;
     gap: 20px;
@@ -298,21 +489,41 @@ section {
     margin-top: 20px;
 }
 
+
+/* =========================================================
+   13. GRID TILE BASE
+========================================================= */
+
 .grid-tile {
     background: var(--surface);
     padding: 30px;
     border-radius: 24px;
     border: 1px solid var(--border);
-    transition: var(--transit-bounce);
+
     display: flex;
     flex-direction: column;
     gap: 15px;
-    text-decoration: none;
-    color: inherit;
+
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+
+    transition: var(--transit-bounce);
 }
 
+.grid-tile h3 {
+    margin-top: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.grid-tile p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+
+/* Accent strip on hover */
 .grid-tile::before {
     content: "";
     position: absolute;
@@ -328,33 +539,25 @@ section {
 .grid-tile:hover {
     transform: translateY(-8px);
     border-color: var(--accent);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
 }
 
 .grid-tile:hover::before {
     opacity: 1;
 }
 
-.grid-tile h3 {
-    margin-top: 0 !important;
-    font-size: 1.4rem;
-    font-weight: 800;
-}
 
-.grid-tile p {
-    font-size: 0.95rem !important;
-    line-height: 1.5;
-}
+/* =========================================================
+   14. BLUR SHIELD OVERLAY
+========================================================= */
 
-/* --- 7. SPECIAL EFFECTS --- */
-
-/* Blur Shield Overlay */
 .fx-blur-shield {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
-    z-index: 1500;
+
+    z-index: 1100;
+
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease;
@@ -365,7 +568,11 @@ body.drawer-open .fx-blur-shield {
     pointer-events: auto;
 }
 
-/* Content Entrance Animation */
+
+/* =========================================================
+   15. CONTENT ENTRANCE ANIMATION
+========================================================= */
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -382,7 +589,11 @@ body.drawer-open .fx-blur-shield {
     animation: fadeInUp 0.7s var(--transit) both;
 }
 
-/* --- 8. DESKTOP SPECIFIC REFINEMENTS --- */
+
+/* =========================================================
+   16. DESKTOP REFINEMENTS
+========================================================= */
+
 @media (min-width: 1024px) {
     .ui-viewport {
         margin-top: 140px;
@@ -397,7 +608,11 @@ body.drawer-open .fx-blur-shield {
     }
 }
 
-/* Handles smaller mobile screens */
+
+/* =========================================================
+   17. SMALL MOBILE REFINEMENTS
+========================================================= */
+
 @media (max-width: 480px) {
     .ui-viewport {
         padding: 0 20px;
@@ -413,266 +628,22 @@ body.drawer-open .fx-blur-shield {
 }
 
 
-/* --- 1. CORE ENGINE & HYPER-MODERN VARIABLES --- */
-@property --gradient-angle {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false;
-}
+/* =========================================================
+   18. SCROLL PROGRESS INDICATOR
+========================================================= */
 
-@property --glow-opacity {
-    syntax: "<number>";
-    initial-value: 0.4;
-    inherits: false;
-}
-
-:root {
-    /* OKLCH - The gold standard for modern digital color */
-    --accent: oklch(65% 0.3 260);
-    --secondary: oklch(70% 0.35 340);
-    --bg: oklch(100% 0 0);
-    --surface: oklch(98% 0.01 260);
-    --text: oklch(12% 0.05 260);
-    --text-muted: oklch(50% 0.02 260);
-    --border: oklch(0% 0 0 / 10%);
-
-    /* Advanced Motion Curve */
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
-    --transit: all 0.6s var(--ease-out-expo);
-}
-
-body.dark-mode {
-    --bg: oklch(8% 0.02 260);
-    --surface: oklch(12% 0.03 260);
-    --text: oklch(98% 0.01 260);
-    --text-muted: oklch(75% 0.02 260);
-    --border: oklch(100% 0 0 / 12%);
-}
-
-/* --- 2. GLOBAL RICH VISUALS --- */
-body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
-}
-
-/* Animated Mesh Background Overlay */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-        radial-gradient(circle at 0% 0%, oklch(65% 0.3 260 / 8%), transparent 40%),
-        radial-gradient(circle at 100% 100%, oklch(70% 0.35 340 / 8%), transparent 40%);
-    z-index: -1;
-    pointer-events: none;
-}
-
-/* --- 3. DYNAMIC CONTENT ANIMATIONS (JSON Nodes) --- */
-
-/* Staggered Entrance for all elements inside #content-mount */
-#content-mount>* {
-    opacity: 0;
-    transform: translateY(30px);
-    animation: revealIn 0.8s var(--ease-out-expo) forwards;
-}
-
-#content-mount>*:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-#content-mount>*:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-#content-mount>*:nth-child(3) {
-    animation-delay: 0.3s;
-}
-
-#content-mount>*:nth-child(n+4) {
-    animation-delay: 0.4s;
-}
-
-@keyframes revealIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* --- 4. THE TILES (High-Richness Hover) --- */
-.grid-tile {
-    position: relative;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: clamp(1.5rem, 5vw, 3rem);
-    border-radius: 32px;
-    transition: var(--transit);
-    overflow: hidden;
-    cursor: pointer;
-    box-shadow: 0 10px 30px -10px oklch(0% 0 0 / 5%);
-}
-
-/* The Animated Aura Border */
-.grid-tile::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    background: conic-gradient(from var(--gradient-angle), transparent, var(--accent), transparent, var(--secondary), transparent);
-    border-radius: inherit;
-    padding: 2px;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.grid-tile:hover {
-    transform: translateY(-12px) scale(1.02);
-    box-shadow: 0 30px 60px -15px oklch(0% 0 0 / 20%);
-    background: var(--bg);
-}
-
-.grid-tile:hover::before {
-    opacity: 1;
-    animation: rotateAngle 3s linear infinite;
-}
-
-@keyframes rotateAngle {
-    to {
-        --gradient-angle: 360deg;
-    }
-}
-
-/* --- 5. THE DRAWER & NAVIGATION LINKS --- */
-.ui-drawer {
-    background: var(--surface);
-    backdrop-filter: blur(30px) saturate(200%);
-    transition: right 0.8s cubic-bezier(0.8, 0, 0.1, 1);
-}
-
-.nav-link {
-    position: relative;
-    font-size: clamp(2rem, 8vw, 3.5rem);
-    font-weight: 900;
-    letter-spacing: -2px;
-    color: var(--text);
-    text-decoration: none;
-    transition: var(--transit);
-    display: block;
-    width: fit-content;
-}
-
-/* Hover "Slice" Effect for Links */
-.nav-link::before {
-    content: attr(data-load);
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: var(--accent);
-    clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
-    transition: clip-path 0.5s var(--ease-out-expo);
-    white-space: nowrap;
-}
-
-.nav-link:hover {
-    transform: translateX(25px);
-}
-
-.nav-link:hover::before {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
-}
-
-/* --- 6. BUTTONS (Liquid Fill Animation) --- */
-.ui-btn-action,
-button[data-load] {
-    position: relative;
-    overflow: hidden;
-    padding: 16px 40px;
-    background: var(--text);
-    color: var(--bg);
-    border-radius: 100px;
-    font-weight: 800;
-    z-index: 1;
-}
-
-.ui-btn-action::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 0%;
-    background: var(--accent);
-    z-index: -1;
-    transition: height 0.4s var(--ease-out-expo);
-}
-
-.ui-btn-action:hover::after {
-    height: 100%;
-}
-
-.ui-btn-action:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 30px var(--border);
-}
-
-/* --- 7. SPECIAL JSON NODES (LI, P, H1) --- */
-
-/* List Items as "Glass Panels" */
-#content-mount li {
-    list-style: none;
-    background: var(--surface);
-    padding: 24px;
-    border-radius: 20px;
-    border-left: 6px solid var(--accent);
-    margin-bottom: 12px;
-    transition: var(--transit);
-}
-
-#content-mount li:hover {
-    background: var(--bg);
-    transform: scale(1.01) translateX(10px);
-    border-left-color: var(--secondary);
-}
-
-/* Typography Fluidity */
-h1 {
-    font-size: clamp(3rem, 10vw, 6rem);
-    line-height: 0.85;
-    letter-spacing: -0.05em;
-    background: linear-gradient(135deg, var(--text) 40%, var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* --- 8. MOBILE OPTIMIZATION --- */
-@media (max-width: 768px) {
-    .ui-viewport {
-        padding: 0 20px;
-        margin-top: 100px;
-    }
-
-    .grid-tile {
-        padding: 24px;
-        border-radius: 24px;
-    }
-}
-
-/* Scroll-Progress Indicator */
 body::after {
     content: "";
     position: fixed;
     top: 0;
     left: 0;
     height: 4px;
+
     background: linear-gradient(90deg, var(--accent), var(--secondary));
+
     width: 0%;
     z-index: 2000;
+
     animation: scrollProgress linear;
     animation-timeline: scroll();
 }
@@ -682,4 +653,3 @@ body::after {
         width: 100%;
     }
 }
-
