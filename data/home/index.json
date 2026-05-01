@@ -8,23 +8,29 @@
       }
     },
     {
+      "h2": {
+        "class": "center",
+        "text": "Sacrifice is supreme Duty"
+      }
+    },
+    {
       "tile": {
-        "title": "National Growth & Prosperity",
-        "desc": "An in-depth analysis of the pillars of socio-economic development. Explore how industrial innovation and technological self-reliance propel a nation toward global superpower status.",
-        "link": "data/development/economics/index.json"
+        "title": "About Me",
+        "desc": "Aditya is an AI engineer who believes that responsible citizens and strong technology together build a better nation. He focuses on learning, integrity, and using technical knowledge for positive social impact.",
+        "link": "data/home/aditya/index.json"
       }
     },
     {
       "tile": {
         "title": "National Vigilance & Counter-Terrorism",
         "desc": "Empowering citizens with the skills to identify suspicious activities and follow proper protocols for reporting threats. Learn the art of observation to protect your community and support law enforcement.",
-        "link" : "data/home/terrorism/index.json"
+        "link": "data/home/terrorism/index.json"
       }
     },
     {
       "tile": {
         "title": "Cyber Sovereignty & Digital Defense",
-        "desc": "Master the tools to defend against cyber-attacks and secure critical infrastructure. Focus on building self-dependent technology to ensure digital independence from foreign threats."
+        "desc": "Master the tools to defend against cyber attacks and secure critical infrastructure. Focus on building self dependent technology to ensure digital independence from foreign threats."
       }
     },
     {

@@ -1,47 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+
+    <!-- CORE META -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEER SENTINEL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b0f14">
+    <meta name="robots" content="index, follow">
+
+    <!-- SEO -->
+    <title>Veer Sentinel</title>
+    <meta name="description" content="Veer Sentinel modern dynamic web application">
+    <link rel="canonical" href="https://yourdomain.com/">
+
+    <!-- FAVICON -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+
+    <!-- PERFORMANCE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- STYLES -->
     <link rel="stylesheet" href="src/css/style.css">
+
 </head>
 
 <body class="ui-root">
-    <div class="fx-blur-shield" id="blur-shield"></div>
 
-    <header class="ui-masthead">
-        <div class="ui-brand">VEER SENTINEL</div>
+    <!-- SKIP LINK -->
+    <a href="#view-layer" class="skip-link">Skip to content</a>
+
+    <!-- NOSCRIPT -->
+    <noscript>
+        <div class="noscript-warning">
+            This application requires JavaScript to render dynamic content. Please enable JavaScript in your browser settings.
+        </div>
+    </noscript>
+
+    <!-- VISUAL OVERLAY -->
+    <div class="fx-blur-shield" id="blur-shield" aria-hidden="true"></div>
+
+    <!-- HEADER -->
+    <header class="ui-masthead" role="banner">
+        <div class="ui-brand">Veer Sentinel</div>
 
         <div class="ui-controls">
-            <button class="ui-menu-trigger" id="menu-open">
-                <div class="bar"></div>
-                <div class="bar"></div>
-
+            <button
+                class="ui-menu-trigger"
+                id="menu-open"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-controls="nav-drawer"
+                aria-expanded="false"
+            >
+                <span class="bar"></span>
+                <span class="bar"></span>
             </button>
         </div>
     </header>
 
-    <nav class="ui-drawer" id="nav-drawer">
+    <!-- NAV DRAWER -->
+    <nav
+        class="ui-drawer"
+        id="nav-drawer"
+        role="navigation"
+        aria-hidden="true"
+    >
         <div class="drawer-inner">
-            <button class="ui-btn-close" id="menu-close">Dismiss ×</button>
-            <button class="ui-btn-ghost" id="theme-switch">Dark Mode</button>
+
+            <button
+                class="ui-btn-close"
+                id="menu-close"
+                type="button"
+                aria-label="Close navigation menu"
+            >
+                Dismiss ×
+            </button>
+
+            <button
+                class="ui-btn-ghost"
+                id="theme-switch"
+                type="button"
+                aria-label="Toggle theme"
+            >
+                Dark Mode
+            </button>
 
             <div class="nav-stack">
-                <a href="#" class="nav-link" data-load="data/home/index.json">Home</a>
-                <a href="#" class="nav-link" data-load="data/home/terrorism/index.json">Terrorism</a>
-                <a href="#" class="nav-link" data-load="data/home/cyber/index.json">Digital Defense</a>
+                <a href="#data/home/index.json" class="nav-link" data-load="data/home/index.json">Home</a>
+                <a href="#data/home/aditya/index.json" class="nav-link" data-load="data/home/aditya/index.json">Aditya</a>
+                <a href="#data/home/cyber/index.json" class="nav-link" data-load="data/home/cyber/index.json">Digital Defense</a>
             </div>
+
         </div>
     </nav>
 
-    <main class="ui-viewport" id="view-layer">
-        <div id="content-mount"></div>
+    <!-- MAIN VIEWPORT -->
+    <main
+        class="ui-viewport"
+        id="view-layer"
+        role="main"
+        tabindex="-1"
+    >
+        <div id="content-mount" aria-live="polite"></div>
     </main>
 
-    <script src="src/js/app.js"></script>
-</body>
+    <!-- SCRIPT -->
+    <script src="src/js/script.js" defer></script>
 
+</body>
 </html>
