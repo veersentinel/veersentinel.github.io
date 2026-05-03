@@ -53,6 +53,7 @@ class ThemeEngine {
         }
     }
 }
+
 /**
  * NAVIGATION ENGINE
  */
@@ -68,7 +69,14 @@ class NavigationEngine {
     #config = {
         activeClass: "active",
         lockClass: "drawer-open",
-        closeDelay: 120
+        closeDelay: 120,
+        swipeThreshold: 70 // Minimum pixels to travel to count as a swipe
+    };
+
+    // Properties for touch tracking
+    #touch = {
+        startX: 0,
+        endX: 0
     };
 
     init() {
@@ -78,9 +86,13 @@ class NavigationEngine {
         closeBtn?.addEventListener("click", () => this.close());
         shield?.addEventListener("click", () => this.close());
 
+        // Keyboard support
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") this.close();
         });
+
+        // Swipe support for Android/iOS
+        this.#initTouchEvents();
 
         drawer?.addEventListener("click", (e) => {
             const link = e.target.closest(".nav-link");
@@ -92,6 +104,36 @@ class NavigationEngine {
 
             setTimeout(() => this.close(), this.#config.closeDelay);
         });
+    }
+
+    /**
+     * Set up touch listeners on the drawer property
+     */
+    #initTouchEvents() {
+        const { drawer } = this.#ui;
+        if (!drawer) return;
+
+        drawer.addEventListener("touchstart", (e) => {
+            this.#touch.startX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        drawer.addEventListener("touchend", (e) => {
+            this.#touch.endX = e.changedTouches[0].screenX;
+            this.#handleSwipe();
+        }, { passive: true });
+    }
+
+    /**
+     * Logic to determine if swipe was to the right
+     */
+    #handleSwipe() {
+        const distance = this.#touch.endX - this.#touch.startX;
+        const isSwipeRight = distance > this.#config.swipeThreshold;
+
+        // If the drawer is active and user swiped right, close it
+        if (this.#ui.drawer.classList.contains(this.#config.activeClass) && isSwipeRight) {
+            this.close();
+        }
     }
 
     open() {
