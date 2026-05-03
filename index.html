@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <!-- CORE META -->
@@ -36,7 +37,8 @@
     <!-- NOSCRIPT -->
     <noscript>
         <div class="noscript-warning">
-            This application requires JavaScript to render dynamic content. Please enable JavaScript in your browser settings.
+            This application requires JavaScript to render dynamic content. Please enable JavaScript in your browser
+            settings.
         </div>
     </noscript>
 
@@ -48,14 +50,8 @@
         <div class="ui-brand">Veer Sentinel</div>
 
         <div class="ui-controls">
-            <button
-                class="ui-menu-trigger"
-                id="menu-open"
-                type="button"
-                aria-label="Open navigation menu"
-                aria-controls="nav-drawer"
-                aria-expanded="false"
-            >
+            <button class="ui-menu-trigger" id="menu-open" type="button" aria-label="Open navigation menu"
+                aria-controls="nav-drawer" aria-expanded="false">
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
@@ -63,48 +59,32 @@
     </header>
 
     <!-- NAV DRAWER -->
-    <nav
-        class="ui-drawer"
-        id="nav-drawer"
-        role="navigation"
-        aria-hidden="true"
-    >
+
+    <nav class="ui-drawer" id="nav-drawer" role="navigation" aria-hidden="true">
         <div class="drawer-inner">
+            <!-- New Header Container for side-by-side buttons -->
+            <div class="drawer-header">
+                <button class="ui-btn-close" id="menu-close" type="button" aria-label="Close navigation menu">
+                    Dismiss ×
+                </button>
 
-            <button
-                class="ui-btn-close"
-                id="menu-close"
-                type="button"
-                aria-label="Close navigation menu"
-            >
-                Dismiss ×
-            </button>
-
-            <button
-                class="ui-btn-ghost"
-                id="theme-switch"
-                type="button"
-                aria-label="Toggle theme"
-            >
-                Dark Mode
-            </button>
+                <button class="ui-btn-ghost" id="theme-switch" type="button" aria-label="Toggle theme">
+                    Dark Mode
+                </button>
+            </div>
 
             <div class="nav-stack">
                 <a href="#data/home/index.json" class="nav-link" data-load="data/home/index.json">Home</a>
-                <a href="#data/home/aditya/index.json" class="nav-link" data-load="data/home/aditya/index.json">Aditya</a>
-                <a href="#data/home/cyber/index.json" class="nav-link" data-load="data/home/cyber/index.json">Digital Defense</a>
+                <a href="#data/home/aditya/index.json" class="nav-link"
+                    data-load="data/home/aditya/index.json">Aditya</a>
+                <a href="#data/home/cyber/index.json" class="nav-link" data-load="data/home/cyber/index.json">Digital
+                    Defense</a>
             </div>
-
         </div>
     </nav>
 
     <!-- MAIN VIEWPORT -->
-    <main
-        class="ui-viewport"
-        id="view-layer"
-        role="main"
-        tabindex="-1"
-    >
+    <main class="ui-viewport" id="view-layer" role="main" tabindex="-1">
         <div id="content-mount" aria-live="polite"></div>
     </main>
 
@@ -112,4 +92,5 @@
     <script src="src/js/script.js" defer></script>
 
 </body>
+
 </html>

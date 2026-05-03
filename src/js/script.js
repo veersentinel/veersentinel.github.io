@@ -2,61 +2,87 @@
 
 /**
  * THEME ENGINE
+ * Purely property-driven. No local storage dependency.
  */
 class ThemeEngine {
-    #btn;
-    #root = document.body;
-    #storageKey = "app_theme";
+    // 1. Define all properties in a single configuration object
+    #config = {
+        btn: null,
+        mount: document.body,
+        tokens: {
+            dark: "dark-mode",
+            active: "theme-active"
+        },
+        labels: {
+            toLight: "Light Mode",
+            toDark: "Dark Mode"
+        }
+    };
 
     constructor(buttonId) {
-        this.#btn = document.getElementById(buttonId);
+        // Set the button property directly from the ID passed
+        this.#config.btn = document.getElementById(buttonId);
     }
 
     init() {
-        const stored = localStorage.getItem(this.#storageKey);
-        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const theme = stored || (systemPrefersDark ? "dark" : "light");
+        // Safety check: if button isn't found, log it so you know why it's "not working"
+        if (!this.#config.btn) {
+            console.warn(`ThemeEngine: Button with ID "${this.#config.btn}" not found.`);
+        }
 
-        this.#apply(theme);
-        this.#btn?.addEventListener("click", () => this.toggle());
+        // Logic based on system preference
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        this.#update(prefersDark);
+
+        // Attach listener via property
+        this.#config.btn?.addEventListener("click", () => {
+            const isDark = this.#config.mount.classList.contains(this.#config.tokens.dark);
+            this.#update(!isDark);
+        });
     }
 
-    toggle() {
-        const isDark = this.#root.classList.contains("dark-mode");
-        this.#apply(isDark ? "light" : "dark");
-    }
+    #update(shouldBeDark) {
+        const { mount, tokens, labels, btn } = this.#config;
 
-    #apply(theme) {
-        const isDark = theme === "dark";
+        // Toggle the class property on the mount property
+        mount.classList.toggle(tokens.dark, shouldBeDark);
 
-        this.#root.classList.toggle("dark-mode", isDark);
-        localStorage.setItem(this.#storageKey, theme);
-
-        if (this.#btn) {
-            this.#btn.textContent = isDark ? "Light Mode" : "Dark Mode";
+        // Update the button label property
+        if (btn) {
+            btn.textContent = shouldBeDark ? labels.toLight : labels.toDark;
         }
     }
 }
-
-
 /**
  * NAVIGATION ENGINE
  */
 class NavigationEngine {
-    #drawer = document.getElementById("nav-drawer");
-    #shield = document.getElementById("blur-shield");
-    #trigger = document.getElementById("menu-open");
+    #ui = {
+        drawer: document.getElementById("nav-drawer"),
+        shield: document.getElementById("blur-shield"),
+        openBtn: document.getElementById("menu-open"),
+        closeBtn: document.getElementById("menu-close"),
+        body: document.body
+    };
+
+    #config = {
+        activeClass: "active",
+        lockClass: "drawer-open",
+        closeDelay: 120
+    };
 
     init() {
-        this.#trigger?.addEventListener("click", () => this.open());
-        document.getElementById("menu-close")?.addEventListener("click", () => this.close());
-        this.#shield?.addEventListener("click", () => this.close());
+        const { openBtn, closeBtn, shield, drawer } = this.#ui;
+
+        openBtn?.addEventListener("click", () => this.open());
+        closeBtn?.addEventListener("click", () => this.close());
+        shield?.addEventListener("click", () => this.close());
 
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") this.close();
         });
 
-        this.#drawer?.addEventListener("click", (e) => {
+        drawer?.addEventListener("click", (e) => {
             const link = e.target.closest(".nav-link");
             if (!link) return;
 
@@ -64,112 +90,157 @@ class NavigationEngine {
             const path = link.getAttribute("data-load");
             if (path) window.location.hash = path;
 
-            setTimeout(() => this.close(), 120);
+            setTimeout(() => this.close(), this.#config.closeDelay);
         });
     }
 
     open() {
-        this.#drawer?.classList.add("active");
-        this.#shield?.classList.add("active");
-        document.body.classList.add("drawer-open");
+        const { drawer, shield, body, openBtn } = this.#ui;
+        drawer?.classList.add(this.#config.activeClass);
+        shield?.classList.add(this.#config.activeClass);
+        body.classList.add(this.#config.lockClass);
 
-        this.#drawer?.setAttribute("aria-hidden", "false");
-        this.#trigger?.setAttribute("aria-expanded", "true");
-
-        this.#drawer?.querySelector("button, a")?.focus();
+        drawer?.setAttribute("aria-hidden", "false");
+        openBtn?.setAttribute("aria-expanded", "true");
+        drawer?.querySelector("button, a")?.focus();
     }
 
     close() {
-        this.#drawer?.classList.remove("active");
-        this.#shield?.classList.remove("active");
-        document.body.classList.remove("drawer-open");
+        const { drawer, shield, body, openBtn } = this.#ui;
+        drawer?.classList.remove(this.#config.activeClass);
+        shield?.classList.remove(this.#config.activeClass);
+        body.classList.remove(this.#config.lockClass);
 
-        this.#drawer?.setAttribute("aria-hidden", "true");
-        this.#trigger?.setAttribute("aria-expanded", "false");
-
-        this.#trigger?.focus();
+        drawer?.setAttribute("aria-hidden", "true");
+        openBtn?.setAttribute("aria-expanded", "false");
+        openBtn?.focus();
     }
 }
 
 /**
- * COMPONENT FACTORY (SAFE)
+ * COMPONENT FACTORY
  */
+
 /**
- * COMPONENT FACTORY (SAFE + SCHEMA AWARE)
+ * COMPONENT FACTORY (FULL IMPLEMENTATION)
+ * Every element property is derived from the #schema or the passed data object.
  */
 class ComponentFactory {
+    // Properties are centralized here to avoid hardcoding strings in methods
+    static #schema = {
+        grid: { tag: "section", class: "tile-grid" },
+        tile: { tag: "div", class: "grid-tile" },
+        content: { tag: "div", class: "tile-content" },
+        button: { tag: "button", class: "ui-btn-action" },
+        image: { loading: "lazy", decoding: "async" },
+        animation: { staggerMs: 80 }
+    };
 
+    /**
+     * Entry point for component generation
+     */
     static create(type, data, index = 0) {
-        switch (type) {
-            case "h1": return this.#text("h1", data);
-            case "h2": return this.#text("h2", data);
-            case "p": return this.#text("p", data);
-            case "img": return this.#image(data);
-            case "tile": return this.#tile(data, index);
-            case "button": return this.#button(data);
-            default: return document.createTextNode("");
-        }
+        const typeMap = {
+            h1: () => this.#buildText("h1", data),
+            h2: () => this.#buildText("h2", data),
+            h3: () => this.#buildText("h3", data),
+            p: () => this.#buildText("p", data),
+            img: () => this.#buildImage(data),
+            tile: () => this.#buildTile(data, index),
+            button: () => this.#buildButton(data),
+            spacer: () => this.#buildSpacer(data)
+        };
+
+        return (typeMap[type] || (() => document.createTextNode("")))();
     }
 
     /**
-     * Applies meta only if explicitly provided in JSON
+     * Internal: Applies all property-based metadata (id, class, style, custom attrs)
      */
-    static #applyMeta(el, data) {
+    static #applyProps(el, data) {
         if (!data || typeof data !== "object") return;
 
+        // Set Class via property if provided, otherwise preserve defaults
         if (data.class) el.className = data.class;
+
+        // Set ID
         if (data.id) el.id = data.id;
+
+        // Set Inline Styles (HD animations or specific positioning)
         if (data.style) el.style.cssText = data.style;
 
+        // Set Custom Attributes (data-*, aria-*, etc.)
         if (data.attrs && typeof data.attrs === "object") {
-            Object.entries(data.attrs).forEach(([k, v]) => {
-                el.setAttribute(k, v);
+            Object.entries(data.attrs).forEach(([key, value]) => {
+                el.setAttribute(key, String(value));
             });
         }
     }
 
-    static #text(tag, data) {
+    /**
+     * FULL METHOD: TEXT ELEMENTS
+     */
+    static #buildText(tag, data) {
         const el = document.createElement(tag);
 
-        if (typeof data === "object") {
-            el.textContent = data.text ?? "";
-            this.#applyMeta(el, data);
-        } else {
-            el.textContent = data;
-        }
+        // Content Property
+        el.textContent = typeof data === "object" ? (data.text ?? "") : data;
+
+        // Apply Metadata
+        this.#applyProps(el, data);
 
         return el;
     }
 
-    static #image(data) {
+    /**
+     * FULL METHOD: HIGH-DEFINITION IMAGES
+     */
+    static #buildImage(data) {
         const img = document.createElement("img");
+        const props = this.#schema.image;
 
+        // Setup Source & Alt Properties
         if (typeof data === "object") {
-            img.src = data.src;
-            img.alt = data.alt || "";
-            this.#applyMeta(img, data);
+            img.src = data.src || "";
+            img.alt = data.alt || "Image content";
+            this.#applyProps(img, data);
         } else {
             img.src = data;
+            img.alt = "";
         }
 
-        img.loading = "lazy";
-        img.decoding = "async";
-        img.referrerPolicy = "no-referrer";
-        img.onerror = () => img.remove();
+        // Performance Properties
+        img.loading = props.loading;
+        img.decoding = props.decoding;
+
+        // Error Handling Property
+        img.onerror = () => {
+            console.error(`Failed to load image: ${img.src}`);
+            img.style.display = "none";
+        };
 
         return img;
     }
 
-    static #tile(data, index) {
-        const wrapper = document.createElement("div");
-        wrapper.className = "grid-tile";
-        wrapper.style.animationDelay = `${index * 80}ms`;
+    /**
+     * FULL METHOD: INTERACTIVE TILES (GRID ITEMS)
+     */
+    static #buildTile(data, index) {
+        const config = this.#schema;
 
-        this.#applyMeta(wrapper, data);
+        // 1. Create Wrapper
+        const wrapper = document.createElement(config.tile.tag);
+        wrapper.className = config.tile.class;
 
-        const content = document.createElement("div");
-        content.className = "tile-content";
+        // 2. Set Staggered Animation Property
+        const delay = index * config.animation.staggerMs;
+        wrapper.style.animationDelay = `${delay}ms`;
 
+        // 3. Create Content Container
+        const content = document.createElement(config.content.tag);
+        content.className = config.content.class;
+
+        // 4. Populate Content Properties
         const title = document.createElement("h3");
         title.textContent = data.title || "";
 
@@ -179,33 +250,70 @@ class ComponentFactory {
         content.append(title, desc);
         wrapper.appendChild(content);
 
+        // 5. Interaction Properties
         if (data.link) {
+            wrapper.setAttribute("role", "link");
+            wrapper.setAttribute("tabindex", "0");
             wrapper.style.cursor = "pointer";
-            wrapper.addEventListener("click", () => {
-                window.location.hash = data.link;
-            });
+
+            const navigate = () => { window.location.hash = data.link; };
+            wrapper.onclick = navigate;
+            wrapper.onkeydown = (e) => { if (e.key === "Enter") navigate(); };
         }
+
+        // 6. Final Property Application
+        this.#applyProps(wrapper, data);
 
         return wrapper;
     }
 
-    static #button(data) {
-        const btn = document.createElement("button");
-        btn.className = "ui-btn-action";
+    /**
+     * FULL METHOD: ACTION BUTTONS (HD SMOOTH)
+     */
+    static #buildButton(data) {
+        const config = this.#schema.button;
+        const btn = document.createElement(config.tag);
+
+        // Class Property
+        btn.className = config.class;
         btn.type = "button";
 
         if (typeof data === "object") {
-            btn.textContent = data.text || "";
-            this.#applyMeta(btn, data);
+            // Text Property
+            btn.textContent = data.text || "Click Here";
 
+            // Click Interaction Property
             if (data.link) {
-                btn.addEventListener("click", () => {
+                btn.onclick = () => {
                     window.location.hash = data.link;
-                });
+                };
             }
+
+            // Accessibility Properties
+            if (data.label) btn.setAttribute("aria-label", data.label);
+
+            // Metadata Application
+            this.#applyProps(btn, data);
         }
 
         return btn;
+    }
+
+    /**
+     * FULL METHOD: LAYOUT SPACERS
+     */
+    static #buildSpacer(data) {
+        const spacer = document.createElement("div");
+        spacer.className = "ui-spacer";
+
+        if (typeof data === "object" && data.size) {
+            spacer.style.height = typeof data.size === "number" ? `${data.size}px` : data.size;
+        } else if (typeof data === "string" || typeof data === "number") {
+            spacer.style.height = typeof data === "number" ? `${data}px` : data;
+        }
+
+        this.#applyProps(spacer, data);
+        return spacer;
     }
 }
 
@@ -213,9 +321,17 @@ class ComponentFactory {
  * APP CORE
  */
 class AppCore {
-    #mount = document.getElementById("content-mount");
-    #cache = new Map();
-    #abortController = null;
+    // Mount and Shell properties
+    #shell = {
+        mount: document.getElementById("content-mount"),
+        defaultPage: "data/home/index.json",
+        loadingOpacity: "0.5"
+    };
+
+    #runtime = {
+        cache: new Map(),
+        controller: null
+    };
 
     constructor() {
         this.theme = new ThemeEngine("theme-switch");
@@ -225,60 +341,54 @@ class AppCore {
     init() {
         this.theme.init();
         this.nav.init();
-
         window.addEventListener("hashchange", () => this.boot());
         this.boot();
     }
-    #safePath(hash) {
-        const allowed = /^data\/[a-z0-9\/\-]+\.json$/i;
-        return allowed.test(hash) ? hash : "data/home/index.json";
+
+    #getCleanPath() {
+        const hash = window.location.hash.slice(1);
+        const pattern = /^data\/[a-z0-9\/\-]+\.json$/i;
+        return pattern.test(hash) ? hash : this.#shell.defaultPage;
     }
 
     async boot() {
-        const raw = window.location.hash.slice(1);
-        const path = this.#safePath(raw);
+        const path = this.#getCleanPath();
+        const container = this.#shell.mount;
 
-        if (!this.#mount) return;
+        if (!container) return;
 
-        this.#mount.setAttribute("aria-busy", "true");
-        this.#mount.style.opacity = "0.4";
+        container.setAttribute("aria-busy", "true");
+        container.style.opacity = this.#shell.loadingOpacity;
 
-        this.#abortController?.abort();
-        this.#abortController = new AbortController();
+        this.#runtime.controller?.abort();
+        this.#runtime.controller = new AbortController();
 
         try {
-            const data = await this.#load(path, this.#abortController.signal);
-            if (!data || !Array.isArray(data.nodes)) throw new Error("Invalid data format");
-            this.#render(data.nodes);
+            const data = await this.#fetch(path, this.#runtime.controller.signal);
+            if (data?.nodes) this.#render(data.nodes);
         } catch (err) {
             if (err.name !== "AbortError") {
-                this.#mount.textContent = "Content failed to load";
+                container.textContent = "Error: Content Unavailable";
             }
         } finally {
-            this.#mount.removeAttribute("aria-busy");
-            this.#mount.style.opacity = "1";
+            container.removeAttribute("aria-busy");
+            container.style.opacity = "1";
         }
     }
 
-    async #load(path, signal) {
-        if (this.#cache.has(path)) {
-            return this.#cache.get(path);
-        }
+    async #fetch(path, signal) {
+        if (this.#runtime.cache.has(path)) return this.#runtime.cache.get(path);
 
         const res = await fetch(path, { signal });
-
-        if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-        }
+        if (!res.ok) throw new Error("Fetch Failed");
 
         const data = await res.json();
-        this.#cache.set(path, data);
-
+        this.#runtime.cache.set(path, data);
         return data;
     }
 
     #render(nodes) {
-        const fragment = document.createDocumentFragment();
+        const frag = document.createDocumentFragment();
         let grid = null;
 
         nodes.forEach((node, i) => {
@@ -288,28 +398,23 @@ class AppCore {
                 if (!grid) {
                     grid = document.createElement("section");
                     grid.className = "tile-grid";
-                    fragment.appendChild(grid);
+                    frag.appendChild(grid);
                 }
                 grid.appendChild(ComponentFactory.create(tag, props, i));
             } else {
                 grid = null;
-                fragment.appendChild(ComponentFactory.create(tag, props, i));
+                frag.appendChild(ComponentFactory.create(tag, props, i));
             }
         });
 
-        this.#mount.replaceChildren(fragment);
-
-        requestAnimationFrame(() => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+        this.#shell.mount.replaceChildren(frag);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 }
 
-
 /**
- * INIT
+ * BOOTSTRAP
  */
 document.addEventListener("DOMContentLoaded", () => {
-    const app = new AppCore();
-    app.init();
+    new AppCore().init();
 });
