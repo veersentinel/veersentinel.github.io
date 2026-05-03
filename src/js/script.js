@@ -358,173 +358,110 @@ class ComponentFactory {
         return spacer;
     }
 }
+
+
 "use strict";
 
 /**
- * APP CORE - PROFESSIONAL MULTI-LANGUAGE EDITION
- * Features: Path Resolution, Language Injection, and State Persistence.
+ * APP CORE - SCALEABLE EDITION
  */
 class AppCore {
-    // 1. Shell Configuration: Core UI references and defaults
     #shell = {
         mount: document.getElementById("content-mount"),
         baseDir: "data",
         defaultPage: "home/index.json",
-        loadingOpacity: "0.6",
-        transitionSpeed: 400 // matches CSS transitions
+        loadingOpacity: "0.5"
     };
 
-    // 2. Locale State: Management of languages
     #locale = {
-        current: "en",
-        supported: ["en", "hn", "french"],
-        fallback: "en",
-        // Map browser codes to your folder names
-        map: { "hi": "hn", "fr": "french", "en": "en" }
+        current: "en", // 1. STICKY DEFAULT: Always English on first visit
+        supported: ["en", "hn", "guj"], // 2. EASY SCALE: Just add new codes here
+        fallback: "en"
     };
 
-    // 3. Runtime State: Caching and Fetch control
     #runtime = {
         cache: new Map(),
-        controller: null,
-        isBooting: false
+        controller: null
     };
 
     constructor() {
-        // Initialize sub-engines from script.js[cite: 1]
         this.theme = new ThemeEngine("theme-switch");
         this.nav = new NavigationEngine();
     }
 
-    /**
-     * Entry point: Prepares locale, initializes engines, and boots the UI.
-     */
     init() {
-        this.#detectLanguage();
+        this.#loadSavedLanguage(); // Only loads if the user manually changed it before
         this.theme.init();
         this.nav.init();
-
-        // Listen for SPA route changes
-        window.addEventListener("hashchange", () => this.boot());
         
-        // Initial Page Load
+        window.addEventListener("hashchange", () => this.boot());
         this.boot();
     }
 
     /**
-     * Language Logic: Detects browser preference or saved choice
+     * Ignores the browser settings. 
+     * Only uses the manual choice saved in the phone/computer.
      */
-    #detectLanguage() {
+    #loadSavedLanguage() {
         const saved = localStorage.getItem("user-lang");
         if (saved && this.#locale.supported.includes(saved)) {
             this.#locale.current = saved;
-            return;
         }
-
-        const browserPref = navigator.language.split('-')[0];
-        const mapped = this.#locale.map[browserPref];
         
-        this.#locale.current = this.#locale.supported.includes(mapped) 
-            ? mapped 
-            : this.#locale.fallback;
+        // Sync the dropdown menu to match
+        const select = document.getElementById("lang-select");
+        if (select) select.value = this.#locale.current;
     }
 
     /**
-     * Public Method: Change language dynamically
-     * Can be called by UI buttons via: app.setLanguage('hn')
+     * Manual Language Switcher
      */
     setLanguage(langCode) {
         if (!this.#locale.supported.includes(langCode)) return;
-        if (this.#locale.current === langCode) return;
-
+        
         this.#locale.current = langCode;
-        localStorage.setItem("user-lang", langCode);
+        localStorage.setItem("user-lang", langCode); // Remember for next time
         
-        // Clear cache as the translations will be different
         this.#runtime.cache.clear();
-        
-        // Reboot the UI to fetch new language data
         this.boot();
-        
-        // Optional: Notify UI components (like the Nav Button label)
-        console.log(`Locale changed to: ${langCode}`);
     }
 
     /**
-     * Path Resolution Engine
-     * Converts a hash like #home/aditya/index.json 
-     * into data/hn/home/aditya/index.json
+     * Automatic Path Builder
      */
     #resolvePath() {
-        const hash = window.location.hash.slice(1);
+        const hash = window.location.hash.slice(1).replace(/^\/+|\/+$/g, '');
         const lang = this.#locale.current;
         const base = this.#shell.baseDir;
 
-        // Clean the hash: remove leading/trailing slashes
-        const cleanHash = hash.replace(/^\/+|\/+$/g, '');
-
-        if (!cleanHash || cleanHash === "") {
-            return `${base}/${lang}/${this.#shell.defaultPage}`;
-        }
-
-        // Validate structure (must end in .json for security)
-        if (!cleanHash.endsWith(".json")) {
-            return `${base}/${lang}/${cleanHash}/index.json`;
-        }
-
-        return `${base}/${lang}/${cleanHash}`;
+        // If no hash, go home. Otherwise, go to the folder in the current language.
+        const target = hash || this.#shell.defaultPage;
+        return `${base}/${lang}/${target}`;
     }
 
-    /**
-     * Boot Engine: Handles the fetching and rendering lifecycle
-     */
     async boot() {
-        if (this.#runtime.isBooting) return;
-        
         const path = this.#resolvePath();
         const container = this.#shell.mount;
-
         if (!container) return;
 
-        // Start Visual Feedback
-        this.#runtime.isBooting = true;
-        container.setAttribute("aria-busy", "true");
-        container.style.transition = `opacity ${this.#shell.transitionSpeed}ms ease`;
         container.style.opacity = this.#shell.loadingOpacity;
-
-        // Cancel pending requests
         this.#runtime.controller?.abort();
         this.#runtime.controller = new AbortController();
 
         try {
             const data = await this.#fetch(path, this.#runtime.controller.signal);
-            
-            // Artificial delay for HD "smooth" transition feel
-            setTimeout(() => {
-                if (data?.nodes) this.#render(data.nodes);
-                this.#finalizeBoot(container);
-            }, 100);
-
+            if (data?.nodes) this.#render(data.nodes);
         } catch (err) {
-            if (err.name !== "AbortError") {
-                this.#handleError(path);
-                this.#finalizeBoot(container);
-            }
+            if (err.name !== "AbortError") this.#handleError();
+        } finally {
+            container.style.opacity = "1";
         }
-    }
-
-    #finalizeBoot(container) {
-        container.removeAttribute("aria-busy");
-        container.style.opacity = "1";
-        this.#runtime.isBooting = false;
     }
 
     async #fetch(path, signal) {
         if (this.#runtime.cache.has(path)) return this.#runtime.cache.get(path);
-
         const res = await fetch(path, { signal });
-        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-
+        if (!res.ok) throw new Error("File not found");
         const data = await res.json();
         this.#runtime.cache.set(path, data);
         return data;
@@ -532,21 +469,19 @@ class AppCore {
 
     #render(nodes) {
         const frag = document.createDocumentFragment();
-        let gridContext = null;
+        let grid = null;
 
         nodes.forEach((node, i) => {
             const [tag, props] = Object.entries(node)[0];
-
-            // Auto-grouping logic for Grid Tiles
             if (tag === "tile") {
-                if (!gridContext) {
-                    gridContext = document.createElement("section");
-                    gridContext.className = "tile-grid";
-                    frag.appendChild(gridContext);
+                if (!grid) {
+                    grid = document.createElement("section");
+                    grid.className = "tile-grid";
+                    frag.appendChild(grid);
                 }
-                gridContext.appendChild(ComponentFactory.create(tag, props, i));
+                grid.appendChild(ComponentFactory.create(tag, props, i));
             } else {
-                gridContext = null; // Break the grid if a non-tile appears
+                grid = null;
                 frag.appendChild(ComponentFactory.create(tag, props, i));
             }
         });
@@ -555,20 +490,10 @@ class AppCore {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    #handleError(path) {
-        console.error(`AppCore: Failed to resolve [${path}]`);
-        this.#shell.mount.innerHTML = `
-            <div class="error-state">
-                <h2>Content Unavailable</h2>
-                <p>The requested page is not available in ${this.#locale.current.toUpperCase()}.</p>
-                <button onclick="location.hash=''">Return Home</button>
-            </div>
-        `;
+    #handleError() {
+        this.#shell.mount.innerHTML = `<p class="center">Content not yet translated to ${this.#locale.current}.</p>`;
     }
 }
 
-/**
- * BOOTSTRAP: Singleton instance
- */
 window.app = new AppCore();
 document.addEventListener("DOMContentLoaded", () => window.app.init());

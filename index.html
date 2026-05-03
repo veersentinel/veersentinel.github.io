@@ -83,12 +83,16 @@
             </div>
 
             <!-- PROFESSIONAL LANGUAGE SWITCHER -->
+            <!-- PROFESSIONAL LANGUAGE SELECTOR -->
             <div class="nav-locale-section">
-                <p class="nav-label-sm">Region & Language</p>
-                <div class="lang-grid">
-                    <button class="ui-btn-lang" onclick="app.setLanguage('en')">English</button>
-                    <button class="ui-btn-lang" onclick="app.setLanguage('hn')">हिन्दी</button>
-                    <button class="ui-btn-lang" onclick="app.setLanguage('french')">Français</button>
+                <label for="lang-select" class="nav-label-sm">Region & Language</label>
+                <div class="select-wrapper">
+                    <select id="lang-select" class="ui-lang-select" onchange="app.setLanguage(this.value)">
+                        <option value="en">English (US)</option>
+                        <option value="hn">हिन्दी (India)</option>
+                        <option value="gujarati">Gujarati</option>
+                    </select>
+                    <span class="select-icon">▼</span>
                 </div>
             </div>
         </div>
