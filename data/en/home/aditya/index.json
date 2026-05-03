@@ -1,0 +1,60 @@
+{
+    "nodes": [
+        {
+            "button": {
+                "text": "Back",
+                "link": "home/index.json"
+            }
+        },
+        {
+            "h1": {
+                "text": "A Citizen’s Oath of Duty, Pride, and Love for India"
+            }
+        },
+        {
+            "p": {
+                "text": "I greet you all with respect. My name is Aditya. I am an ordinary citizen of this nation. I am not a soldier in the armed forces. I am not a member of any government department or official agency. I do not serve the country through any formal institution. I am simply an Indian, born on this sacred land, raised by its culture, and shaped by its history. I love my country deeply and I feel immense pride in belonging to it."
+            }
+        },
+        {
+            "p": {
+                "text": "Even though I am not part of the army, the police, or any government body, I am still a part of India. That alone gives me responsibility. Just as soldiers guard the borders of the nation and police officers protect society, every citizen also has a duty toward the country. In my understanding, every person who truly loves this land is a soldier in spirit. A soldier does not always wear a uniform. A soldier is anyone who is ready to work for the nation without expecting anything in return."
+            }
+        },
+        {
+            "p": {
+                "text": "True service to the country should not be driven by reward, money, recognition, or praise. It should come from a sense of duty. It should come from love. It should come from a feeling that this land has given us everything and now it is our turn to give something back. This idea of action without expectation is what I have learned from the teachings of the Mahabharata. We must perform our duty without desire for results. Our work for the nation should be our karma, done with sincerity and devotion."
+            }
+        },
+        {
+            "p": {
+                "text": "Whether the country feels proud of us or not, we must always feel proud of our country. Our contribution may be small. It may go unnoticed. It may remain unknown to the world. Yet it must exist. That is the true form of patriotism. Working silently for the nation without greed, without attention, and without personal benefit is the highest form of national service."
+            }
+        },
+        {
+            "h2": {
+                "text": "Civilizational Heritage and Inspiration"
+            }
+        },
+        {
+            "p": {
+                "text": "Our country is one of the most ancient civilizations in the world. It is a land where early knowledge in mathematics, science, philosophy, and language flourished. This heritage inspires us to become better citizens. It reminds us that we come from a long tradition of wisdom, discipline, and cultural strength. The Himalayas in the north, the Indian Ocean in the south, the Sindhu in the west, and the lands toward Myanmar in the east together form a civilizational geography that lives in our memory and imagination."
+            }
+        },
+        {
+            "h2": {
+                "text": "A Personal Commitment to the Nation"
+            }
+        },
+        {
+            "p": {
+                "text": "I dream of a strong, united India that draws strength from its civilizational roots, cultural confidence, and collective sense of duty. I believe that the future of the nation depends not only on its leaders, soldiers, or officials, but on the silent commitment of ordinary citizens like me who choose to live with integrity, responsibility, and love for the motherland."
+            }
+        },
+        {
+            "p": {
+                "text": "This is my belief. This is my feeling. This is my promise to my country."
+            }
+        }
+    ]
+}

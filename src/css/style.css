@@ -777,3 +777,58 @@ body::after {
         width: 100%;
     }
 }
+
+/*
+============================
+Language Change Buttons
+=============================
+*/
+
+.nav-locale-section {
+    margin-top: auto;
+    /* Pushes to bottom of drawer */
+    padding: 20px 16px;
+    border-top: 1px solid var(--border);
+}
+
+.nav-label-sm {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.lang-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.ui-btn-lang {
+    all: unset;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.ui-btn-lang:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+}
+
+/* Optional: Active state style if you track current lang in DOM */
+.ui-btn-lang.active {
+    background: var(--accent);
+    color: white;
+}

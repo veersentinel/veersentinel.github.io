@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <!-- CORE META -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,7 +25,6 @@
 
     <!-- STYLES -->
     <link rel="stylesheet" href="src/css/style.css">
-
 </head>
 
 <body class="ui-root">
@@ -37,8 +35,7 @@
     <!-- NOSCRIPT -->
     <noscript>
         <div class="noscript-warning">
-            This application requires JavaScript to render dynamic content. Please enable JavaScript in your browser
-            settings.
+            This application requires JavaScript to render dynamic content. Please enable JavaScript in your browser settings.
         </div>
     </noscript>
 
@@ -50,6 +47,7 @@
         <div class="ui-brand">Veer Sentinel</div>
 
         <div class="ui-controls">
+            <!-- Language indicator in main header (Optional) -->
             <button class="ui-menu-trigger" id="menu-open" type="button" aria-label="Open navigation menu"
                 aria-controls="nav-drawer" aria-expanded="false">
                 <span class="bar"></span>
@@ -59,10 +57,8 @@
     </header>
 
     <!-- NAV DRAWER -->
-
     <nav class="ui-drawer" id="nav-drawer" role="navigation" aria-hidden="true">
         <div class="drawer-inner">
-            <!-- New Header Container for side-by-side buttons -->
             <div class="drawer-header">
                 <button class="ui-btn-close" id="menu-close" type="button" aria-label="Close navigation menu">
                     Dismiss ×
@@ -74,11 +70,25 @@
             </div>
 
             <div class="nav-stack">
-                <a href="#data/home/index.json" class="nav-link" data-load="data/home/index.json">Home</a>
-                <a href="#data/home/aditya/index.json" class="nav-link"
-                    data-load="data/home/aditya/index.json">Aditya</a>
-                <a href="#data/home/cyber/index.json" class="nav-link" data-load="data/home/cyber/index.json">Digital
-                    Defense</a>
+                <a href="#home/index.json" class="nav-link">
+                    <span>Home</span>
+                </a>
+                <a href="#home/aditya/index.json" class="nav-link">
+                    <span>Aditya</span>
+                </a>
+                <a href="#home/cyber/index.json" class="nav-link">
+                    <span>Digital Defense</span>
+                </a>
+            </div>
+
+            <!-- PROFESSIONAL LANGUAGE SWITCHER -->
+            <div class="nav-locale-section">
+                <p class="nav-label-sm">Region & Language</p>
+                <div class="lang-grid">
+                    <button class="ui-btn-lang" onclick="app.setLanguage('en')">English</button>
+                    <button class="ui-btn-lang" onclick="app.setLanguage('hn')">हिन्दी</button>
+                    <button class="ui-btn-lang" onclick="app.setLanguage('french')">Français</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -90,7 +100,5 @@
 
     <!-- SCRIPT -->
     <script src="src/js/script.js" defer></script>
-
 </body>
-
 </html>

@@ -358,71 +358,172 @@ class ComponentFactory {
         return spacer;
     }
 }
+"use strict";
 
 /**
- * APP CORE
+ * APP CORE - PROFESSIONAL MULTI-LANGUAGE EDITION
+ * Features: Path Resolution, Language Injection, and State Persistence.
  */
 class AppCore {
-    // Mount and Shell properties
+    // 1. Shell Configuration: Core UI references and defaults
     #shell = {
         mount: document.getElementById("content-mount"),
-        defaultPage: "data/home/index.json",
-        loadingOpacity: "0.5"
+        baseDir: "data",
+        defaultPage: "home/index.json",
+        loadingOpacity: "0.6",
+        transitionSpeed: 400 // matches CSS transitions
     };
 
+    // 2. Locale State: Management of languages
+    #locale = {
+        current: "en",
+        supported: ["en", "hn", "french"],
+        fallback: "en",
+        // Map browser codes to your folder names
+        map: { "hi": "hn", "fr": "french", "en": "en" }
+    };
+
+    // 3. Runtime State: Caching and Fetch control
     #runtime = {
         cache: new Map(),
-        controller: null
+        controller: null,
+        isBooting: false
     };
 
     constructor() {
+        // Initialize sub-engines from script.js[cite: 1]
         this.theme = new ThemeEngine("theme-switch");
         this.nav = new NavigationEngine();
     }
 
+    /**
+     * Entry point: Prepares locale, initializes engines, and boots the UI.
+     */
     init() {
+        this.#detectLanguage();
         this.theme.init();
         this.nav.init();
+
+        // Listen for SPA route changes
         window.addEventListener("hashchange", () => this.boot());
+        
+        // Initial Page Load
         this.boot();
     }
 
-    #getCleanPath() {
-        const hash = window.location.hash.slice(1);
-        const pattern = /^data\/[a-z0-9\/\-]+\.json$/i;
-        return pattern.test(hash) ? hash : this.#shell.defaultPage;
+    /**
+     * Language Logic: Detects browser preference or saved choice
+     */
+    #detectLanguage() {
+        const saved = localStorage.getItem("user-lang");
+        if (saved && this.#locale.supported.includes(saved)) {
+            this.#locale.current = saved;
+            return;
+        }
+
+        const browserPref = navigator.language.split('-')[0];
+        const mapped = this.#locale.map[browserPref];
+        
+        this.#locale.current = this.#locale.supported.includes(mapped) 
+            ? mapped 
+            : this.#locale.fallback;
     }
 
+    /**
+     * Public Method: Change language dynamically
+     * Can be called by UI buttons via: app.setLanguage('hn')
+     */
+    setLanguage(langCode) {
+        if (!this.#locale.supported.includes(langCode)) return;
+        if (this.#locale.current === langCode) return;
+
+        this.#locale.current = langCode;
+        localStorage.setItem("user-lang", langCode);
+        
+        // Clear cache as the translations will be different
+        this.#runtime.cache.clear();
+        
+        // Reboot the UI to fetch new language data
+        this.boot();
+        
+        // Optional: Notify UI components (like the Nav Button label)
+        console.log(`Locale changed to: ${langCode}`);
+    }
+
+    /**
+     * Path Resolution Engine
+     * Converts a hash like #home/aditya/index.json 
+     * into data/hn/home/aditya/index.json
+     */
+    #resolvePath() {
+        const hash = window.location.hash.slice(1);
+        const lang = this.#locale.current;
+        const base = this.#shell.baseDir;
+
+        // Clean the hash: remove leading/trailing slashes
+        const cleanHash = hash.replace(/^\/+|\/+$/g, '');
+
+        if (!cleanHash || cleanHash === "") {
+            return `${base}/${lang}/${this.#shell.defaultPage}`;
+        }
+
+        // Validate structure (must end in .json for security)
+        if (!cleanHash.endsWith(".json")) {
+            return `${base}/${lang}/${cleanHash}/index.json`;
+        }
+
+        return `${base}/${lang}/${cleanHash}`;
+    }
+
+    /**
+     * Boot Engine: Handles the fetching and rendering lifecycle
+     */
     async boot() {
-        const path = this.#getCleanPath();
+        if (this.#runtime.isBooting) return;
+        
+        const path = this.#resolvePath();
         const container = this.#shell.mount;
 
         if (!container) return;
 
+        // Start Visual Feedback
+        this.#runtime.isBooting = true;
         container.setAttribute("aria-busy", "true");
+        container.style.transition = `opacity ${this.#shell.transitionSpeed}ms ease`;
         container.style.opacity = this.#shell.loadingOpacity;
 
+        // Cancel pending requests
         this.#runtime.controller?.abort();
         this.#runtime.controller = new AbortController();
 
         try {
             const data = await this.#fetch(path, this.#runtime.controller.signal);
-            if (data?.nodes) this.#render(data.nodes);
+            
+            // Artificial delay for HD "smooth" transition feel
+            setTimeout(() => {
+                if (data?.nodes) this.#render(data.nodes);
+                this.#finalizeBoot(container);
+            }, 100);
+
         } catch (err) {
             if (err.name !== "AbortError") {
-                container.textContent = "Error: Content Unavailable";
+                this.#handleError(path);
+                this.#finalizeBoot(container);
             }
-        } finally {
-            container.removeAttribute("aria-busy");
-            container.style.opacity = "1";
         }
+    }
+
+    #finalizeBoot(container) {
+        container.removeAttribute("aria-busy");
+        container.style.opacity = "1";
+        this.#runtime.isBooting = false;
     }
 
     async #fetch(path, signal) {
         if (this.#runtime.cache.has(path)) return this.#runtime.cache.get(path);
 
         const res = await fetch(path, { signal });
-        if (!res.ok) throw new Error("Fetch Failed");
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
 
         const data = await res.json();
         this.#runtime.cache.set(path, data);
@@ -431,20 +532,21 @@ class AppCore {
 
     #render(nodes) {
         const frag = document.createDocumentFragment();
-        let grid = null;
+        let gridContext = null;
 
         nodes.forEach((node, i) => {
             const [tag, props] = Object.entries(node)[0];
 
+            // Auto-grouping logic for Grid Tiles
             if (tag === "tile") {
-                if (!grid) {
-                    grid = document.createElement("section");
-                    grid.className = "tile-grid";
-                    frag.appendChild(grid);
+                if (!gridContext) {
+                    gridContext = document.createElement("section");
+                    gridContext.className = "tile-grid";
+                    frag.appendChild(gridContext);
                 }
-                grid.appendChild(ComponentFactory.create(tag, props, i));
+                gridContext.appendChild(ComponentFactory.create(tag, props, i));
             } else {
-                grid = null;
+                gridContext = null; // Break the grid if a non-tile appears
                 frag.appendChild(ComponentFactory.create(tag, props, i));
             }
         });
@@ -452,11 +554,21 @@ class AppCore {
         this.#shell.mount.replaceChildren(frag);
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
+
+    #handleError(path) {
+        console.error(`AppCore: Failed to resolve [${path}]`);
+        this.#shell.mount.innerHTML = `
+            <div class="error-state">
+                <h2>Content Unavailable</h2>
+                <p>The requested page is not available in ${this.#locale.current.toUpperCase()}.</p>
+                <button onclick="location.hash=''">Return Home</button>
+            </div>
+        `;
+    }
 }
 
 /**
- * BOOTSTRAP
+ * BOOTSTRAP: Singleton instance
  */
-document.addEventListener("DOMContentLoaded", () => {
-    new AppCore().init();
-});
+window.app = new AppCore();
+document.addEventListener("DOMContentLoaded", () => window.app.init());

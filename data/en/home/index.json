@@ -1,0 +1,52 @@
+{
+  "nodes": [
+    {
+      "img": {
+        "class": "center",
+        "src": "src/pics/icons/logo.png",
+        "style": "width: 250px; margin-bottom: 40px;"
+      }
+    },
+    {
+      "h2": {
+        "class": "center",
+        "text": "Sacrifice is supreme Duty"
+      }
+    },
+    {
+      "tile": {
+        "title": "About Me",
+        "desc": "Aditya is an AI engineer who believes that responsible citizens and strong technology together build a better nation. He focuses on learning, integrity, and using technical knowledge for positive social impact.",
+        "link": "home/aditya/index.json"
+      }
+    },
+    {
+      "tile": {
+        "title": "National Vigilance & Counter-Terrorism",
+        "desc": "Empowering citizens with the skills to identify suspicious activities and follow proper protocols for reporting threats. Learn the art of observation to protect your community and support law enforcement.",
+        "link": "home/terrorism/index.json"
+      }
+    },
+    {
+      "tile": {
+        "title": "Cyber Sovereignty & Digital Defense",
+        "desc": "Master the tools to defend against cyber attacks and secure critical infrastructure. Focus on building self dependent technology to ensure digital independence from foreign threats.",
+        "link": "home/cyber/index.json"
+      }
+    },
+    {
+      "tile": {
+        "title": "Information Warfare & Narrative Defense",
+        "desc": "Expose foreign propaganda, fake news, and coordinated bot networks. Learn to dismantle enemy narratives on social media and uphold the truth through digital awareness and media literacy.",
+        "link": "home/narrative/index.json"
+      }
+    },
+    {
+      "tile": {
+        "title": "Geopolitical Strategy & Intelligence",
+        "desc": "Understand the global landscape and how to identify external threats. Analyze enemy tactics and regional dynamics to stay one step ahead in the defense of your nation.",
+        "link": "home/geopolitics/index.json"
+      }
+    }
+  ]
+}
